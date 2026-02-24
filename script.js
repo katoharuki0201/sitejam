@@ -14,14 +14,15 @@ animation.addEventListener('complete', function () {
   animation.loop = true;
 });
 
+// ★ Lottieロード完了後にGSAP初期化
 animation.addEventListener('DOMLoaded', function () {
   initGSAP();
 });
 
+// フォールバック：Lottieが遅れた場合もwindow.loadで起動
 window.addEventListener('load', () => {
+  // DOMLoadedが先に発火していれば何もしない
   if (!window._gsapInited) initGSAP();
-  // 画像等のロード完了後に再計算
-  ScrollTrigger.refresh();
 });
 
 function initGSAP() {
@@ -34,6 +35,7 @@ function initGSAP() {
     '.content .about, .content .voom, .content .activity, .content .messages',
   );
 
+  // ★ totalDurationを一箇所で計算し、endと合わせる
   function calcTotalDuration() {
     let total = 0;
     hSections.forEach((sec, i) => {
@@ -53,8 +55,7 @@ function initGSAP() {
       start: 'top top',
       end: () => '+=' + calcTotalDuration(),
       pin: true,
-      pinSpacing: true, // ← 追加：.fvとの重なりを防ぐスペーサーを確保
-      scrub: 1, // ← 変更：true → 1（チラつき軽減）
+      scrub: true,
       invalidateOnRefresh: true,
       onUpdate: (self) => {
         if (!voomAnimated) {
