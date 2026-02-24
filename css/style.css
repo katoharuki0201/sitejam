@@ -746,6 +746,7 @@ body {
   border-radius: 14px;
   background: #fff;
   overflow: hidden;
+  box-shadow: 3px 3px 0 #212121;
 
   img {
     position: absolute;
