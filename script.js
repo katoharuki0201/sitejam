@@ -14,16 +14,34 @@ animation.addEventListener('complete', function () {
   animation.loop = true;
 });
 
-window.addEventListener('load', () => {
-  gsap.registerPlugin(ScrollTrigger);
+animation.addEventListener('DOMLoaded', function () {
+  initGSAP();
+});
 
-  document.fonts.ready.then(() => {
-    ScrollTrigger.refresh(true);
-  });
+window.addEventListener('load', () => {
+  if (!window._gsapInited) initGSAP();
+  // 画像等のロード完了後に再計算
+  ScrollTrigger.refresh();
+});
+
+function initGSAP() {
+  if (window._gsapInited) return;
+  window._gsapInited = true;
+
+  gsap.registerPlugin(ScrollTrigger);
 
   const hSections = gsap.utils.toArray(
     '.content .about, .content .voom, .content .activity, .content .messages',
   );
+
+  function calcTotalDuration() {
+    let total = 0;
+    hSections.forEach((sec, i) => {
+      total += sec.scrollHeight - sec.clientHeight;
+      if (hSections[i + 1]) total += window.innerHeight * 0.5;
+    });
+    return total;
+  }
 
   let voomAnimated = false;
   let activityAnimated = false;
@@ -33,14 +51,10 @@ window.addEventListener('load', () => {
     scrollTrigger: {
       trigger: '.main',
       start: 'top top',
-      end: () => {
-        const totalScroll = hSections.reduce((sum, sec) => {
-          return sum + (sec.scrollHeight - sec.clientHeight);
-        }, 0);
-        return '+=' + (totalScroll + window.innerHeight * 0.5 * (hSections.length - 1));
-      },
+      end: () => '+=' + calcTotalDuration(),
       pin: true,
-      scrub: true,
+      pinSpacing: true, // ← 追加：.fvとの重なりを防ぐスペーサーを確保
+      scrub: 1, // ← 変更：true → 1（チラつき軽減）
       invalidateOnRefresh: true,
       onUpdate: (self) => {
         if (!voomAnimated) {
@@ -117,4 +131,4 @@ window.addEventListener('load', () => {
       });
     }
   });
-});
+}

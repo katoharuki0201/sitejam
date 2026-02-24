@@ -63,10 +63,27 @@ body {
 
 .wrapper {
   background: url(../img/bg.jpg) center center / contain;
-  /* overflow: hidden; */
+  overflow: hidden;
 }
 
 /* fv */
+.fv {
+  position: relative;
+  z-index: 1;
+}
+
+.main {
+  position: relative;
+  z-index: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#hero-animation {
+  width: 100%;
+  height: 100%;
+}
+
 .fv-inner {
   max-width: calc(1190px + 40px * 2);
   padding: 40px;
